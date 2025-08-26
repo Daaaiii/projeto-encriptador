@@ -1,0 +1,50 @@
+<div class="container">
+<h2>Tarefa 1.1: Descriptografia (AES-CBC)</h2>
+<form (ngSubmit)="onDecryptCBC()" class="crypto-form">
+<mat-form-field appearance="outline">
+<mat-label>Chave (Hex)</mat-label>
+<input matInput id="chaveCBC" [(ngModel)]="chaveCBC" name="chaveCBC" required>
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Texto Cifrado (Hex)</mat-label>
+  <input matInput id="textoCifradoCBC" [(ngModel)]="textoCifradoCBC" name="textoCifradoCBC" required>
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>IV (Hex)</mat-label>
+  <input matInput id="ivCBC" [(ngModel)]="ivCBC" name="ivCBC" required>
+</mat-form-field>
+
+<button mat-raised-button color="primary" type="submit">Decifrar</button>
+</form>
+<div *ngIf="textoClaroCBC" class="result-container">
+<h3>Resultado da Decifragem:</h3>
+<p>{{ textoClaroCBC }}</p>
+</div>
+</div>
+
+<hr>
+
+<div class="container">
+<h2>Tarefa 1.2: Criptografia (AES-CTR)</h2>
+<form (ngSubmit)="onEncryptCTR()" class="crypto-form">
+<mat-form-field appearance="outline">
+<mat-label>Chave (Hex)</mat-label>
+<input matInput id="chaveCTR" [(ngModel)]="chaveCTR" name="chaveCTR" required>
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label>Texto Claro (UTF-8)</mat-label>
+  <input matInput id="textoClaroCTR" [(ngModel)]="textoClaroCTR" name="textoClaroCTR" required>
+</mat-form-field>
+
+<button mat-raised-button color="accent" type="submit">Cifrar</button>
+</form>
+<div *ngIf="resultadoCTR" class="result-container">
+<h3>Resultado da Cifragem:</h3>
+<p><strong>IV (Hex):</strong> {{ resultadoCTR.ivHex }}</p>
+<p><strong>Random (Hex):</strong> {{ resultadoCTR.  randomHex }}</p>
+<p><strong>Texto Cifrado (Hex):</strong> {{ resultadoCTR.textoCifradoHex }}</p>
+</div>
+</div>

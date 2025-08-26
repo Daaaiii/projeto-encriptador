@@ -1,0 +1,39 @@
+<div class="container">
+  <h2>Diffie-Hellman</h2>
+  <p>
+    O algoritmo Diffie-Hellman é um método de troca de chaves que permite a dois
+    usuários estabelecer uma chave secreta compartilhada, mesmo na presença de
+    um eavesdropper.
+  </p>
+  <p>
+    Ele se baseia na dificuldade de resolver o problema do logaritmo discreto.
+  </p>
+  <p>
+    p = 1041607122029938459843911326429539139964006065005940226363139
+   <br>g = 10
+    <br>Alice envia para você valor A =
+    105008283869277434967871522668292359874644989537271965222162
+    <br>
+    <br>Observação:
+    Você deve gerar um valor aleatório b com no mínimo 40 dígitos e menor que p.
+  </p>
+
+  <div class="result-box">
+    <h3>Tarefa 2.1</h3>
+    <p>Seu objetivo é gerar um valor B = g ^ b mod p</p>
+    <p><strong>Valor de 'b' gerado (decimal):</strong> {{ bValue }}</p>
+    <p><strong>Valor de 'B' calculado (decimal):</strong> {{ BValue }}</p>
+  </div>
+
+  <div class="result-box">
+    <h3>Tarefa 2.2</h3>
+    <p>Uma vez recebido o valor de A, da Alice, calcule um valor para gerar a chave que será usada para você enviar mensagens para ela. Assim, primeiro você deve calcular v = A ^ b mod p</p>
+    <p><strong>Valor de 'v' calculado (decimal):</strong> {{ vValue }}</p>
+  </div>
+
+  <div class="result-box">
+    <h3>Tarefa 2.3</h3>
+    <p>Sabe-se que para gerar a chave k, Alice e Bob usam SHA256 e pegam os primeiros 128 bits do resultado. Ou seja, se v = 123456789, por exemplo, use o comando (no Linux) "echo –n 123456789 | shasum -a 256" e pegue os 128 primeiros bits do resultado</p>
+    <p><strong>Chave 'k' (hexadecimal):</strong> {{ kValue }}</p>
+  </div>
+</div>

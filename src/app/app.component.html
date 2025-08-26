@@ -1,0 +1,29 @@
+
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Criptografia e Segurança</span>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+
+  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/cripto" routerLinkActive="active" (click)="sidenav.close()">
+        <mat-icon>lock</mat-icon>
+        <span>AES Criptografia</span>
+      </a>
+      <a mat-list-item routerLink="/diffie-hellman" routerLinkActive="active" (click)="sidenav.close()">
+        <mat-icon>vpn_key</mat-icon>
+        <span>Diffie-Hellman</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
