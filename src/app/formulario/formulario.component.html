@@ -1,50 +1,62 @@
 <div class="container">
-<h2>Tarefa 1.1: Descriptografia (AES-CBC)</h2>
-<form (ngSubmit)="onDecryptCBC()" class="crypto-form">
-<mat-form-field appearance="outline">
-<mat-label>Chave (Hex)</mat-label>
-<input matInput id="chaveCBC" [(ngModel)]="chaveCBC" name="chaveCBC" required>
-</mat-form-field>
-
-<mat-form-field appearance="outline">
-  <mat-label>Texto Cifrado (Hex)</mat-label>
-  <input matInput id="textoCifradoCBC" [(ngModel)]="textoCifradoCBC" name="textoCifradoCBC" required>
-</mat-form-field>
-
-<mat-form-field appearance="outline">
-  <mat-label>IV (Hex)</mat-label>
-  <input matInput id="ivCBC" [(ngModel)]="ivCBC" name="ivCBC" required>
-</mat-form-field>
-
-<button mat-raised-button color="primary" type="submit">Decifrar</button>
-</form>
-<div *ngIf="textoClaroCBC" class="result-container">
-<h3>Resultado da Decifragem:</h3>
-<p>{{ textoClaroCBC }}</p>
-</div>
+    <h2>Criptografia Simétrica (AES)</h2>
+    <mat-form-field appearance="outline">
+        <mat-label>Modo de Operação</mat-label>
+        <mat-select [(ngModel)]="modoSelecionado" name="modo" (selectionChange)="onChangeMode()">
+            <mat-option value="cbc">AES-CBC</mat-option>
+            <mat-option value="ctr">AES-CTR</mat-option>
+        </mat-select>
+    </mat-form-field>
 </div>
 
 <hr>
 
 <div class="container">
-<h2>Tarefa 1.2: Criptografia (AES-CTR)</h2>
-<form (ngSubmit)="onEncryptCTR()" class="crypto-form">
-<mat-form-field appearance="outline">
-<mat-label>Chave (Hex)</mat-label>
-<input matInput id="chaveCTR" [(ngModel)]="chaveCTR" name="chaveCTR" required>
-</mat-form-field>
+    <h3>Criptografar</h3>
+    <form (ngSubmit)="onCriptografar()" class="crypto-form">
+        <mat-form-field appearance="outline">
+            <mat-label>Chave (Hex)</mat-label>
+            <input matInput [(ngModel)]="chave" name="chave" required>
+        </mat-form-field>
 
-<mat-form-field appearance="outline">
-  <mat-label>Texto Claro (UTF-8)</mat-label>
-  <input matInput id="textoClaroCTR" [(ngModel)]="textoClaroCTR" name="textoClaroCTR" required>
-</mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Texto Claro</mat-label>
+            <input matInput [(ngModel)]="textoClaroInput" name="textoClaro" required>
+        </mat-form-field>
 
-<button mat-raised-button color="accent" type="submit">Cifrar</button>
-</form>
-<div *ngIf="resultadoCTR" class="result-container">
-<h3>Resultado da Cifragem:</h3>
-<p><strong>IV (Hex):</strong> {{ resultadoCTR.ivHex }}</p>
-<p><strong>Random (Hex):</strong> {{ resultadoCTR.  randomHex }}</p>
-<p><strong>Texto Cifrado (Hex):</strong> {{ resultadoCTR.textoCifradoHex }}</p>
+        <button mat-raised-button color="accent" type="submit">Cifrar</button>
+    </form>
+    <div *ngIf="resultadoCripto" class="result-container">
+        <h3>Resultado da Cifragem:</h3>
+        <p><strong>Texto Cifrado (Hex):</strong> {{ resultadoCripto.textoCifrado }}</p>
+        <p><strong>IV (Hex):</strong> {{ resultadoCripto.iv }}</p>
+    </div>
 </div>
+
+<hr>
+
+<div class="container">
+    <h3>Descriptografar ({{ modoSelecionado.toUpperCase() }})</h3>
+    <form (ngSubmit)="onDescriptografar()" class="crypto-form">
+        <mat-form-field appearance="outline">
+            <mat-label>Chave (Hex)</mat-label>
+            <input matInput [(ngModel)]="chave" name="chaveDes" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Texto Cifrado (Hex)</mat-label>
+            <input matInput [(ngModel)]="textoCifradoInput" name="textoCifradoDes" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>IV (Hex)</mat-label>
+            <input matInput [(ngModel)]="ivInput" name="ivDes" required>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">Decifrar</button>
+    </form>
+    <div *ngIf="resultadoDecripto" class="result-container">
+        <h3>Resultado da Decifragem:</h3>
+        <p>{{ resultadoDecripto }}</p>
+    </div>
 </div>

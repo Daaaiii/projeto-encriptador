@@ -1,39 +1,198 @@
 <div class="container">
-  <h2>Diffie-Hellman</h2>
-  <p>
-    O algoritmo Diffie-Hellman é um método de troca de chaves que permite a dois
-    usuários estabelecer uma chave secreta compartilhada, mesmo na presença de
-    um eavesdropper.
-  </p>
-  <p>
-    Ele se baseia na dificuldade de resolver o problema do logaritmo discreto.
-  </p>
-  <p>
-    p = 1041607122029938459843911326429539139964006065005940226363139
-   <br>g = 10
-    <br>Alice envia para você valor A =
-    105008283869277434967871522668292359874644989537271965222162
-    <br>
-    <br>Observação:
-    Você deve gerar um valor aleatório b com no mínimo 40 dígitos e menor que p.
-  </p>
+      <div class="main-card">
+        <div class="header">
+          <h2>🔐 Protocolo Diffie-Hellman - Segunda Parte da Fase 1</h2>
+        </div>
 
-  <div class="result-box">
-    <h3>Tarefa 2.1</h3>
-    <p>Seu objetivo é gerar um valor B = g ^ b mod p</p>
-    <p><strong>Valor de 'b' gerado (decimal):</strong> {{ bValue }}</p>
-    <p><strong>Valor de 'B' calculado (decimal):</strong> {{ BValue }}</p>
-  </div>
+        <div class="content">
+          <!-- Valores Iniciais -->
+          <div class="section">
+            <h3 class="section-title">ℹ️ Valores Fornecidos</h3>
+            <div class="values-table">
+              <div class="table-row">
+                <div class="table-cell-label">Primo p:</div>
+                <div class="table-cell-value monospace">{{ values.p }}</div>
+              </div>
+              <div class="table-row">
+                <div class="table-cell-label">Gerador g:</div>
+                <div class="table-cell-value monospace">{{ values.g }}</div>
+              </div>
+              <div class="table-row">
+                <div class="table-cell-label">Valor A (Alice):</div>
+                <div class="table-cell-value monospace">{{ values.A }}</div>
+              </div>
+              <div class="table-row">
+                <div class="table-cell-label">Valor b (privado):</div>
+                <div class="table-cell-value monospace">{{ values.b }}</div>
+              </div>
+              <div class="table-row">
+                <div class="table-cell-label">Dígitos de b:</div>
+                <div class="table-cell-value">
+                  <span class="badge success">{{ values.b.length }} dígitos</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <div class="result-box">
-    <h3>Tarefa 2.2</h3>
-    <p>Uma vez recebido o valor de A, da Alice, calcule um valor para gerar a chave que será usada para você enviar mensagens para ela. Assim, primeiro você deve calcular v = A ^ b mod p</p>
-    <p><strong>Valor de 'v' calculado (decimal):</strong> {{ vValue }}</p>
-  </div>
+          <!-- Status Loading -->
+          <div class="section" *ngIf="loading">
+            <div class="loading-container">
+              <div class="spinner"></div>
+              <p>Calculando valores... Por favor, aguarde.</p>
+            </div>
+          </div>
 
-  <div class="result-box">
-    <h3>Tarefa 2.3</h3>
-    <p>Sabe-se que para gerar a chave k, Alice e Bob usam SHA256 e pegam os primeiros 128 bits do resultado. Ou seja, se v = 123456789, por exemplo, use o comando (no Linux) "echo –n 123456789 | shasum -a 256" e pegue os 128 primeiros bits do resultado</p>
-    <p><strong>Chave 'k' (hexadecimal):</strong> {{ kValue }}</p>
-  </div>
-</div>
+          <!-- Tarefa 2.1 -->
+          <div class="section" *ngIf="!loading && results">
+            <div class="task-card info">
+              <h3 class="task-title">🧮 Tarefa 2.1: Cálculo do Valor B</h3>
+
+              <div class="task-content">
+                <div class="formula-section">
+                  <h4>Fórmula:</h4>
+                  <div class="formula-box">
+                    B = g<sup>b</sup> mod p = {{ values.g }}<sup>{{ formatNumber(values.b, 20) }}...</sup> mod {{ formatNumber(values.p, 20) }}...
+                  </div>
+                </div>
+
+                <div class="result-section">
+                  <h4>Resultado:</h4>
+                  <div class="result-box success">
+                    <strong>B = </strong><span class="monospace">{{ results.B }}</span>
+                  </div>
+                </div>
+
+                <div class="steps-section">
+                  <h4>Passos do Cálculo:</h4>
+                  <ol class="steps-list">
+                    <li>Utilizar exponenciação modular eficiente: pow(g, b, p)</li>
+                    <li>Calcular 10<sup>b</sup> mod p usando aritmética modular</li>
+                    <li>O resultado B é o valor público a ser enviado para Alice</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarefa 2.2 -->
+          <div class="section" *ngIf="!loading && results">
+            <div class="task-card warning">
+              <h3 class="task-title">🔄 Tarefa 2.2: Cálculo do Valor v (Chave Compartilhada)</h3>
+
+              <div class="task-content">
+                <div class="formula-section">
+                  <h4>Fórmula:</h4>
+                  <div class="formula-box">
+                    v = A<sup>b</sup> mod p = {{ formatNumber(values.A, 20) }}...<sup>{{ formatNumber(values.b, 20) }}...</sup> mod {{ formatNumber(values.p, 20) }}...
+                  </div>
+                </div>
+
+                <div class="result-section">
+                  <h4>Resultado:</h4>
+                  <div class="result-box warning">
+                    <strong>v = </strong><span class="monospace">{{ results.v }}</span>
+                  </div>
+                </div>
+
+                <div class="steps-section">
+                  <h4>Passos do Cálculo:</h4>
+                  <ol class="steps-list">
+                    <li>Utilizar exponenciação modular: pow(A, b, p)</li>
+                    <li>Elevar A (valor de Alice) à potência b (valor privado) módulo p</li>
+                    <li>O valor v representa a chave compartilhada antes do hash</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarefa 2.3 -->
+          <div class="section" *ngIf="!loading && results">
+            <div class="task-card success">
+              <h3 class="task-title">🛡️ Tarefa 2.3: Geração da Chave k (SHA256)</h3>
+
+              <div class="task-content">
+                <div class="formula-section">
+                  <h4>Processo:</h4>
+                  <div class="process-box">
+                    <div><strong>Entrada:</strong> v = {{ results.v }}</div>
+                    <div><strong>SHA256:</strong> {{ results.sha256_full }}</div>
+                    <div><strong>Primeiros 128 bits:</strong> {{ results.k }} (32 chars hex)</div>
+                  </div>
+                </div>
+
+                <div class="result-section">
+                  <h4>Chave Final:</h4>
+                  <div class="key-result">
+                    <div class="key-icon">🔑</div>
+                    <div class="key-value">k = {{ results.k }}</div>
+                  </div>
+                </div>
+
+                <div class="steps-section">
+                  <h4>Passos do Cálculo:</h4>
+                  <ol class="steps-list">
+                    <li>Converter valor v para string decimal</li>
+                    <li>Aplicar função SHA256 na string</li>
+                    <li>Extrair primeiros 128 bits (32 caracteres hexadecimais)</li>
+                    <li>Esta chave k será usada para criptografia</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resumo Final -->
+          <div class="section" *ngIf="!loading && results">
+            <div class="summary-card">
+              <div class="summary-header">
+                <h3>📋 Resumo dos Resultados</h3>
+              </div>
+              <div class="summary-content">
+                <div class="summary-table">
+                  <div class="summary-row muted">
+                    <div class="summary-label">b (valor privado):</div>
+                    <div class="summary-value monospace">{{ values.b }}</div>
+                  </div>
+                  <div class="summary-row info">
+                    <div class="summary-label">B (valor público a enviar):</div>
+                    <div class="summary-value monospace">{{ results.B }}</div>
+                  </div>
+                  <div class="summary-row warning">
+                    <div class="summary-label">v (chave compartilhada):</div>
+                    <div class="summary-value monospace">{{ results.v }}</div>
+                  </div>
+                  <div class="summary-row success">
+                    <div class="summary-label">k (chave de 128 bits):</div>
+                    <div class="summary-value monospace large">{{ results.k }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botões de Ação -->
+          <div class="section" *ngIf="!loading && results">
+            <div class="actions">
+              <button class="btn primary" (click)="exportResults()">
+                📥 Exportar Resultados
+              </button>
+              <button class="btn secondary" (click)="copyToClipboard()">
+                📋 Copiar Chave k
+              </button>
+              <button class="btn outline" (click)="recalculate()">
+                🔄 Recalcular
+              </button>
+            </div>
+          </div>
+
+          <!-- Erro -->
+          <div class="section" *ngIf="error">
+            <div class="error-card">
+              <h4>❌ Erro:</h4>
+              <p>{{ error }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
