@@ -1,62 +1,286 @@
-<div class="container">
-    <h2>Criptografia Simétrica (AES)</h2>
-    <mat-form-field appearance="outline">
-        <mat-label>Modo de Operação</mat-label>
-        <mat-select [(ngModel)]="modoSelecionado" name="modo" (selectionChange)="onChangeMode()">
-            <mat-option value="cbc">AES-CBC</mat-option>
-            <mat-option value="ctr">AES-CTR</mat-option>
-        </mat-select>
-    </mat-form-field>
-</div>
 
-<hr>
-
-<div class="container">
-    <h3>Criptografar</h3>
-    <form (ngSubmit)="onCriptografar()" class="crypto-form">
-        <mat-form-field appearance="outline">
-            <mat-label>Chave (Hex)</mat-label>
-            <input matInput [(ngModel)]="chave" name="chave" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Texto Claro</mat-label>
-            <input matInput [(ngModel)]="textoClaroInput" name="textoClaro" required>
-        </mat-form-field>
-
-        <button mat-raised-button color="accent" type="submit">Cifrar</button>
-    </form>
-    <div *ngIf="resultadoCripto" class="result-container">
-        <h3>Resultado da Cifragem:</h3>
-        <p><strong>Texto Cifrado (Hex):</strong> {{ resultadoCripto.textoCifrado }}</p>
-        <p><strong>IV (Hex):</strong> {{ resultadoCripto.iv }}</p>
+<div class="crypto-container">
+  <!-- Header Principal -->
+  <div class="main-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <div class="header-text">
+        <h1>Criptografia Simétrica AES</h1>
+        <p>Sistema de criptografia e descriptografia usando Advanced Encryption Standard</p>
+      </div>
     </div>
-</div>
+  </div>
 
-<hr>
-
-<div class="container">
-    <h3>Descriptografar ({{ modoSelecionado.toUpperCase() }})</h3>
-    <form (ngSubmit)="onDescriptografar()" class="crypto-form">
-        <mat-form-field appearance="outline">
-            <mat-label>Chave (Hex)</mat-label>
-            <input matInput [(ngModel)]="chave" name="chaveDes" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Texto Cifrado (Hex)</mat-label>
-            <input matInput [(ngModel)]="textoCifradoInput" name="textoCifradoDes" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>IV (Hex)</mat-label>
-            <input matInput [(ngModel)]="ivInput" name="ivDes" required>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit">Decifrar</button>
-    </form>
-    <div *ngIf="resultadoDecripto" class="result-container">
-        <h3>Resultado da Decifragem:</h3>
-        <p>{{ resultadoDecripto }}</p>
+  <!-- Seleção do Modo -->
+  <div class="mode-selection-card">
+    <div class="card-header">
+      <i class="fas fa-cog me-2"></i>
+      <h3>Configuração do Algoritmo</h3>
     </div>
+    <div class="card-body">
+      <div class="mode-selector">
+        <label class="mode-label">Modo de Operação:</label>
+        <mat-form-field appearance="outline" class="mode-select">
+          <mat-label>Selecione o Modo</mat-label>
+          <mat-select [(ngModel)]="modoSelecionado" name="modo" (selectionChange)="onChangeMode()">
+            <mat-option value="cbc">
+              <div class="option-content">
+                <i class="fas fa-link"></i>
+                <span>AES-CBC</span>
+                <small>(Cipher Block Chaining)</small>
+              </div>
+            </mat-option>
+            <mat-option value="ctr">
+              <div class="option-content">
+                <i class="fas fa-calculator"></i>
+                <span>AES-CTR</span>
+                <small>(Counter Mode)</small>
+              </div>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="mode-info">
+          <div class="info-badge" [ngClass]="modoSelecionado">
+            <i class="fas fa-info-circle"></i>
+            <span *ngIf="modoSelecionado === 'cbc'">Modo CBC - Cada bloco depende do anterior</span>
+            <span *ngIf="modoSelecionado === 'ctr'">Modo CTR - Criptografia em fluxo com contador</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="crypto-sections">
+    <!-- Seção de Criptografia -->
+    <div class="crypto-card encrypt-card">
+      <div class="card-header">
+        <div class="header-left">
+          <i class="fas fa-lock"></i>
+          <h3>Criptografar</h3>
+        </div>
+        <div class="header-badge encrypt">
+          <i class="fas fa-arrow-right"></i>
+          <span>Texto → Cifra</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form (ngSubmit)="onCriptografar()" class="crypto-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>
+                <i class="fas fa-key me-2"></i>
+                Chave de Criptografia (Hexadecimal)
+              </mat-label>
+              <input matInput
+                     [(ngModel)]="chave"
+                     name="chave"
+                     placeholder="Ex: 7f8a9c2d1e5b3f4a6c8e0d2f9b7c5a1e"
+                     required
+                     class="hex-input">
+              <mat-hint>Chave de 128 bits em formato hexadecimal</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>
+                <i class="fas fa-file-alt me-2"></i>
+                Texto a ser Criptografado
+              </mat-label>
+              <textarea matInput
+                        [(ngModel)]="textoClaroInput"
+                        name="textoClaro"
+                        placeholder="Digite aqui o texto que deseja criptografar..."
+                        rows="3"
+                        required
+                        class="text-input"></textarea>
+              <mat-hint>Texto em formato livre</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button
+                    color="accent"
+                    type="submit"
+                    class="action-button encrypt-btn">
+              <i class="fas fa-lock me-2"></i>
+              Criptografar
+            </button>
+          </div>
+        </form>
+
+        <!-- Resultado da Criptografia -->
+        <div *ngIf="resultadoCripto" class="result-section">
+          <div class="result-header">
+            <i class="fas fa-check-circle"></i>
+            <h4>Resultado da Criptografia</h4>
+          </div>
+          <div class="result-grid">
+            <div class="result-item">
+              <label class="result-label">
+                <i class="fas fa-shield-alt"></i>
+                Texto Cifrado (Hex):
+              </label>
+              <div class="result-value cipher-text">
+                <code>{{ resultadoCripto.textoCifrado }}</code>
+                <button mat-icon-button
+                        class="copy-btn"
+                        (click)="copyToClipboard(resultadoCripto.textoCifrado)"
+                        matTooltip="Copiar">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </div>
+            <div class="result-item">
+              <label class="result-label">
+                <i class="fas fa-random"></i>
+                Vetor de Inicialização (IV):
+              </label>
+              <div class="result-value iv-text">
+                <code>{{ resultadoCripto.iv }}</code>
+                <button mat-icon-button
+                        class="copy-btn"
+                        (click)="copyToClipboard(resultadoCripto.iv)"
+                        matTooltip="Copiar">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Descriptografia -->
+    <div class="crypto-card decrypt-card">
+      <div class="card-header">
+        <div class="header-left">
+          <i class="fas fa-unlock"></i>
+          <h3>Descriptografar</h3>
+        </div>
+        <div class="header-badge decrypt">
+          <i class="fas fa-arrow-left"></i>
+          <span>Cifra → Texto</span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <form (ngSubmit)="onDescriptografar()" class="crypto-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>
+                <i class="fas fa-key me-2"></i>
+                Chave de Descriptografia (Hexadecimal)
+              </mat-label>
+              <input matInput
+                     [(ngModel)]="chave"
+                     name="chaveDes"
+                     placeholder="Ex: 7f8a9c2d1e5b3f4a6c8e0d2f9b7c5a1e"
+                     required
+                     class="hex-input">
+              <mat-hint>Mesma chave usada para criptografar</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>
+                <i class="fas fa-shield-alt me-2"></i>
+                Texto Cifrado (Hexadecimal)
+              </mat-label>
+              <textarea matInput
+                        [(ngModel)]="textoCifradoInput"
+                        name="textoCifradoDes"
+                        placeholder="Cole aqui o texto cifrado em formato hexadecimal..."
+                        rows="3"
+                        required
+                        class="hex-input"></textarea>
+              <mat-hint>Texto cifrado obtido na criptografia</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>
+                <i class="fas fa-random me-2"></i>
+                Vetor de Inicialização - IV (Hexadecimal)
+              </mat-label>
+              <input matInput
+                     [(ngModel)]="ivInput"
+                     name="ivDes"
+                     placeholder="IV gerado durante a criptografia"
+                     required
+                     class="hex-input">
+              <mat-hint>IV obtido na criptografia</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button
+                    color="primary"
+                    type="submit"
+                    class="action-button decrypt-btn">
+              <i class="fas fa-unlock me-2"></i>
+              Descriptografar
+            </button>
+          </div>
+        </form>
+
+        <!-- Resultado da Descriptografia -->
+        <div *ngIf="resultadoDecripto" class="result-section">
+          <div class="result-header">
+            <i class="fas fa-check-circle"></i>
+            <h4>Resultado da Descriptografia</h4>
+          </div>
+          <div class="result-grid">
+            <div class="result-item full-width">
+              <label class="result-label">
+                <i class="fas fa-file-alt"></i>
+                Texto Original Recuperado:
+              </label>
+              <div class="result-value decrypted-text">
+                <div class="text-content">{{ resultadoDecripto }}</div>
+                <button mat-icon-button
+                        class="copy-btn"
+                        (click)="copyToClipboard(resultadoDecripto)"
+                        matTooltip="Copiar">
+                  <i class="fas fa-copy"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rodapé com informações -->
+  <div class="info-footer">
+    <div class="info-grid">
+      <div class="info-item">
+        <i class="fas fa-info-circle"></i>
+        <div>
+          <h5>AES (Advanced Encryption Standard)</h5>
+          <p>Algoritmo de criptografia simétrica padrão usado mundialmente</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fas fa-key"></i>
+        <div>
+          <h5>Chave de 128 bits</h5>
+          <p>Utiliza chaves de 32 caracteres hexadecimais (128 bits)</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+          <h5>Segurança</h5>
+          <p>Nível de segurança militar para proteção de dados</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

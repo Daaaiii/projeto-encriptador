@@ -79,4 +79,15 @@ export class FormularioComponent {
       this.resultadoDecripto = null;
     }
   }
+
+  async copyToClipboard(key: string) {
+    if (!key) return;
+
+    try {
+      await navigator.clipboard.writeText(key);
+      alert('✅ Chave k copiada para a área de transferência!');
+    } catch (err) {
+      alert('❌ Falha ao copiar a chave k: ' + err);
+    }
+  }
 }
