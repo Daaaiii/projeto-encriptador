@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as CryptoJS from 'crypto-js';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EncriptadorService {
   constructor() {}
@@ -14,18 +14,16 @@ export class EncriptadorService {
     const chave = CryptoJS.enc.Hex.parse(chaveHex);
     const iv = CryptoJS.lib.WordArray.random(16);
 
-    let mode;
+    let encryptOptions: any = {
+      mode: modo === 'cbc' ? CryptoJS.mode.CBC : CryptoJS.mode.CTR,
+      iv: iv
+    };
+
     if (modo === 'cbc') {
-      mode = CryptoJS.mode.CBC;
-    } else {
-      mode = CryptoJS.mode.CTR;
+      encryptOptions.padding = CryptoJS.pad.Pkcs7;
     }
 
-    const textoCifradoBytes = CryptoJS.AES.encrypt(textoClaro, chave, {
-      mode: mode,
-      iv: iv,
-      padding: CryptoJS.pad.Pkcs7,
-    });
+    const textoCifradoBytes = CryptoJS.AES.encrypt(textoClaro, chave, encryptOptions);
 
     return {
       textoCifrado: textoCifradoBytes.ciphertext.toString(CryptoJS.enc.Hex),
@@ -33,39 +31,38 @@ export class EncriptadorService {
     };
   }
 
-  decryptCBC(chaveHex: string, textoCifradoHex: string, ivHex: string): string {
+  decrypt(chaveHex: string, textoCifradoHex: string, ivHex: string, modo: 'cbc' | 'ctr'): string {
     const chave = CryptoJS.enc.Hex.parse(chaveHex);
     const textoCifrado = CryptoJS.enc.Hex.parse(textoCifradoHex);
     const iv = CryptoJS.enc.Hex.parse(ivHex);
 
+    const cipherParams = CryptoJS.lib.CipherParams.create({
+      ciphertext: textoCifrado
+    });
+
+    let decryptOptions: any = {
+      mode: modo === 'cbc' ? CryptoJS.mode.CBC : CryptoJS.mode.CTR,
+      iv: iv
+    };
+
+    if (modo === 'cbc') {
+      decryptOptions.padding = CryptoJS.pad.Pkcs7;
+    }
+
     const textoDecifradoBytes = CryptoJS.AES.decrypt(
-      { ciphertext: textoCifrado } as any,
+      cipherParams,
       chave,
-      {
-        mode: CryptoJS.mode.CBC,
-        iv: iv,
-        padding: CryptoJS.pad.Pkcs7,
-      }
+      decryptOptions
     );
 
     return textoDecifradoBytes.toString(CryptoJS.enc.Utf8);
   }
 
+  decryptCBC(chaveHex: string, textoCifradoHex: string, ivHex: string): string {
+    return this.decrypt(chaveHex, textoCifradoHex, ivHex, 'cbc');
+  }
+
   decryptCTR(chaveHex: string, textoCifradoHex: string, ivHex: string): string {
-    const chave = CryptoJS.enc.Hex.parse(chaveHex);
-    const textoCifrado = CryptoJS.enc.Hex.parse(textoCifradoHex);
-    const iv = CryptoJS.enc.Hex.parse(ivHex);
-
-    const textoDecifradoBytes = CryptoJS.AES.decrypt(
-      { ciphertext: textoCifrado } as any,
-      chave,
-      {
-        mode: CryptoJS.mode.CTR,
-        iv: iv,
-        padding: CryptoJS.pad.Pkcs7,
-      }
-    );
-
-    return textoDecifradoBytes.toString(CryptoJS.enc.Utf8);
+    return this.decrypt(chaveHex, textoCifradoHex, ivHex, 'ctr');
   }
 }
